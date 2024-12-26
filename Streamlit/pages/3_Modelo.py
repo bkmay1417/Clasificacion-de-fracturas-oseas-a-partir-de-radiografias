@@ -9,8 +9,11 @@ from PIL import Image
 from functools import lru_cache
 import cv2
 
-# Ruta donde se descargará y descomprimirá el modelo
-SAVED_MODEL_DIR = "modeloexportado\saved_model"
+# Ruta al directorio actual (steamlit/pages)
+current_dir = os.path.dirname(__file__)
+
+# Ruta al modelo, relativa al directorio actual
+SAVED_MODEL_DIR = os.path.join(current_dir, "../modeloexportado/saved_model")
 MODEL_ZIP = "modeloexportado.zip"
 
 # Función para descargar y preparar el modelo desde Dropbox
