@@ -9,9 +9,6 @@ from PIL import Image
 from functools import lru_cache
 import cv2
 
-# Ruta al directorio actual (steamlit/pages)
-current_dir = os.path.dirname(__file__)
-
 # Ruta al modelo, relativa al directorio actual
 SAVED_MODEL_DIR = "/workspaces/Clasificacion-de-fracturas-oseas-a-partir-de-radiografias/modeloexportado/saved_model"
 MODEL_ZIP = "modeloexportado.zip"
