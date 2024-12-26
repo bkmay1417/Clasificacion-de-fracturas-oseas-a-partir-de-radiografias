@@ -9,12 +9,16 @@ from PIL import Image
 from functools import lru_cache
 import cv2
 
-# Ruta al directorio actual (steamlit/pages)
-current_dir = os.path.dirname(__file__)
-
 # Ruta al modelo, relativa al directorio actual
-SAVED_MODEL_DIR = "/workspaces/Clasificacion-de-fracturas-oseas-a-partir-de-radiografias/modeloexportado/saved_model"
+SAVED_MODEL_DIR = os.path.join(os.path.dirname(__file__), "../modeloexportado/saved_model")
 MODEL_ZIP = "modeloexportado.zip"
+
+if os.path.exists(SAVED_MODEL_DIR):
+    st.write("Archivos encontrados en el directorio del modelo:")
+    st.write(os.listdir(SAVED_MODEL_DIR))
+else:
+    st.error(f"No se encontró el directorio: {SAVED_MODEL_DIR}")
+
 
 # Función para descargar y preparar el modelo desde Dropbox
 def download_model():
@@ -114,7 +118,17 @@ if uploaded_file is not None:
     input_tensor = input_tensor[tf.newaxis, ...]  # Agregar una dimensión para el lote
 
     # Cargar el modelo
-    detect_fn = load_model()
+    try:
+        detect_fn = load_model()
+    except Exception as e:
+        st.error(f"Error al cargar el modelo: {e}")
+        st.write("Contenido del directorio actual:")
+        st.write(os.listdir(os.getcwd()))
+        st.write("Contenido del directorio modeloexportado:")
+        if os.path.exists("modeloexportado"):
+            st.write(os.listdir("modeloexportado"))
+        else:
+            st.error("El directorio modeloexportado no existe.")
 
     # Realizar la detección
     st.write("Realizando detección...")
