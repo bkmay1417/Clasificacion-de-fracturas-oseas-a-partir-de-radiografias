@@ -8,18 +8,13 @@ import tensorflow as tf
 from PIL import Image
 from functools import lru_cache
 import cv2
+import warnings
+
+warnings.filterwarnings("ignore")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Obtiene el directorio base
 SAVED_MODEL_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "modeloexportado", "saved_model"))
 MODEL_ZIP = "modeloexportado.zip"
-
-"""
-if os.path.exists(SAVED_MODEL_DIR):
-    st.write("Archivos encontrados en el directorio del modelo:")
-    st.write(os.listdir(SAVED_MODEL_DIR))
-else:
-    st.error(f"No se encontró el directorio: {SAVED_MODEL_DIR}")
-"""
 
 # Función para descargar y preparar el modelo desde Dropbox
 def download_model():
