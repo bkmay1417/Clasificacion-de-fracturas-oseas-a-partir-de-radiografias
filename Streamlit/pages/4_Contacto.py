@@ -1,13 +1,14 @@
 import streamlit as st
 import smtplib
+import re
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Función para enviar el correo
 def send_email(subject, body, to_email):
-    from_email = "-------------"  # Cambia esto por tu correo de Gmail
-    password = "---------"  # Cambia esto por tu contraseña de Gmail (o utiliza una contraseña de aplicación si usas 2FA)
-
+    from_email = "adrian.facundo2001@gmail.com"
+    password = "sreo rlxg zrmv klqa"
+    
     msg = MIMEMultipart()
     msg['From'] = from_email
     msg['To'] = to_email
@@ -29,13 +30,11 @@ def send_email(subject, body, to_email):
         print(f"Error al enviar el correo: {e}")
         return False
 
-# Función para mostrar las estrellas
-def display_stars(rating):
-    stars = "⭐⭐⭐⭐⭐"  # Total de 5 estrellas
-    empty_stars = "☆☆☆☆☆"  # Estrellas vacías
-    filled_stars = stars[:rating]  # Primeras 'rating' estrellas llenas
-    empty_stars = empty_stars[rating:]  # Las restantes estrellas vacías
-    return filled_stars + empty_stars  # Estrellas coloreadas y vacías combinadas
+# Función para validar el correo electrónico
+def validar_email(email):
+    # Expresión regular para validar el formato del correo
+    patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(patron, email)
 
 # Título de la página
 st.title('Formulario de Contacto')
@@ -52,13 +51,16 @@ with st.form(key='contact_form'):
     if submit_button:
         # Si el formulario fue enviado, se prepara el mensaje
         if nombre and email and mensaje:
-            subject = f"Mensaje de {nombre} desde el formulario de contacto"
-            body = f"Nombre: {nombre}\nEmail: {email}\nMensaje: {mensaje}\nCalificación: {rating} estrellas"
-            to_email = "adrian.facundo2001@gmail.com"  # Tu correo de contacto
-            
-            if send_email(subject, body, to_email):
-                st.success("¡Mensaje enviado con éxito!")
+            if validar_email(email):
+                subject = f"Mensaje de {nombre} desde el formulario de contacto"
+                body = f"Nombre: {nombre}\nEmail: {email}\nMensaje: {mensaje}\n"
+                to_email = "adrian.facundo2001@gmail.com"  # Tu correo de contacto
+                
+                if send_email(subject, body, to_email):
+                    st.success("¡Mensaje enviado con éxito!")
+                else:
+                    st.error("Hubo un error al enviar el mensaje. Intenta de nuevo.")
             else:
-                st.error("Hubo un error al enviar el mensaje. Intenta de nuevo.")
+                st.error("Por favor, ingresa un correo electrónico válido.")
         else:
             st.error("Por favor, llena todos los campos.")

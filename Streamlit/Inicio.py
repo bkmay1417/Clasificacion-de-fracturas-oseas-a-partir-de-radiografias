@@ -54,14 +54,14 @@ with st.container():
     # Datos de los miembros del equipo
     miembros = [
         {"nombre": "Facundo Corvalan", "imagen": "https://avatars.githubusercontent.com/u/166779106?v=4", "linkedin": "www.linkedin.com/in/facundo-corvalan", "github": "https://github.com/facu-corvalan"},
-        {"nombre": "Javier Yañez", "imagen": "https://avatars.githubusercontent.com/u/123128073?v=4", "linkedin": "https://www.linkedin.com/in/michael-martinez-8773ab143/", "github": "https://github.com/bkmay1417"},
-        {"nombre": "Michael Martinez", "imagen": "https://avatars.githubusercontent.com/u/163685041?v=4", "linkedin": "https://www.linkedin.com/in/jiy93/", "github": "https://github.com/javyleonhart"},
+        {"nombre": "Javier Yañez", "imagen": "https://avatars.githubusercontent.com/u/123128073?v=4", "linkedin": "https://www.linkedin.com/in/jiy93/", "github": "https://github.com/javyleonhart" },
+        {"nombre": "Michael Martinez", "imagen": "https://avatars.githubusercontent.com/u/163685041?v=4","linkedin": "https://www.linkedin.com/in/michael-martinez-8773ab143/", "github": "https://github.com/bkmay1417"},
         {"nombre": "Jesus H. Parra B.", "imagen": "https://avatars.githubusercontent.com/u/123877201?v=4", "linkedin": "https://www.linkedin.com/in/jesus-horacio-parra-belandria/", "github": "https://github.com/ing-jhparra"}
     ]
 
 cols = st.columns(4)  
 
-# Iconos para LinkedIn y correo electrónico
+# Iconos para LinkedIn y giyhub
 icon_linkedin = "https://cdn-icons-png.flaticon.com/256/174/174857.png" 
 icon_github = "https://img.icons8.com/m_outlined/512/github.png" 
 
@@ -71,12 +71,12 @@ for col, miembro in zip(cols, miembros):
         <div style="text-align: center;">
             <img src="{miembro['imagen']}" alt="{miembro['nombre']}" style="width: 200px; height: 200px; border-radius: 50%; margin-bottom: 15px;"> 
             <p style="font-size: 30px; margin-top: 20px; margin-bottom: 10px;"><strong>{miembro['nombre']}</strong></p>
-            <div style="margin-top: 10px;">  <!-- Espacio entre el nombre y los iconos -->
-                <a href="{miembro['linkedin']}" target="_blank" style="margin-right: 15px;">  <!-- Separación entre los iconos (LinkedIn y GitHub) -->
-                    <img src="{icon_linkedin}" alt="LinkedIn" width="30">
+            <div style="margin-top: 10px; display: flex; align-items: center; justify-content: center">  <!-- Espacio entre el nombre y los iconos -->
+                <div style="background-color: white; padding: 1px; margin-right: 10px"><a href="{miembro['linkedin']}" target="_blank">  <!-- Separación entre los iconos (LinkedIn y GitHub) -->
+                    <img src="{icon_linkedin}" alt="LinkedIn" width="40"></div>
                 </a>
-                <a href="{miembro['github']}" target="_blank">
-                    <img src="{icon_github}" alt="GitHub" width="60">
+                <div style="background-color: white; border-radius: 50%"><a href="{miembro['github']}" target="_blank">
+                    <img src="{icon_github}" alt="GitHub" width="60"></div>
                 </a>
             </div>
         </div>
