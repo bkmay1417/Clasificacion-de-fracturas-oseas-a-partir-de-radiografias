@@ -10,7 +10,10 @@ from functools import lru_cache
 import cv2
 import warnings
 
-warnings.filterwarnings("ignore")
+# Ignorar advertencias de tipo DeprecationWarning
+def warn(*args, **kwargs):
+    pass
+warnings.warn = warn
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Obtiene el directorio base
 SAVED_MODEL_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "modeloexportado", "saved_model"))
@@ -21,7 +24,7 @@ def download_model():
     # URL de Dropbox modificada para la descarga directa
     url = "https://www.dropbox.com/scl/fi/4n3u85naocg8t4bot4z8y/modeloexportado.zip?rlkey=35ghoaaqbiq67y7ggyr5nc23l&st=l78bt9m7&dl=1"  # URL de Dropbox modificada
     output = MODEL_ZIP
-    
+
     # Inicializamos la barra de progreso
     progress_bar = st.progress(0)  # Establece el progreso inicial a 0%
     status_text = st.empty()  # Texto para actualizar el estado
@@ -79,77 +82,102 @@ def download_model():
         except Exception as e:
             st.error(f"Ocurrió un error durante la descarga: {e}")
 
-@st.cache_resource
+# Función para cargar el modelo en memoria
+@lru_cache(maxsize=1)
 def load_model():
-    st.write("Cargando modelo en memoria...")
+    print("Cargando modelo...")
     model = tf.saved_model.load(SAVED_MODEL_DIR)
-    st.write("Modelo cargado exitosamente.")
+    print("Modelo cargado exitosamente.")
     return model
 
 # Función para cargar imágenes y convertirlas en arreglos de NumPy
 def load_image_into_numpy_array(image):
-    img = Image.open(image).convert('RGB')
-    return np.array(img, dtype=np.uint8)
+    img = Image.open(image).convert('RGB')  # Asegurar que la imagen tiene 3 canales (RGB)
+    return np.array(img, dtype=np.uint8)  # Convertir a uint8
 
 # Interfaz de Streamlit
 st.title("Detección de fracturas óseas")
 
+# Descargar el modelo si no está presente
 if not os.path.exists(SAVED_MODEL_DIR):
     download_model()
-
-# Cargar el modelo una vez
-model = load_model()
 
 # Subir la imagen para la detección
 uploaded_file = st.file_uploader("Sube una imagen", type=["png", "jpg", "jpeg"])
 
 if uploaded_file is not None:
+    # Cargar la imagen desde Streamlit
     image_np = load_image_into_numpy_array(uploaded_file)
 
+    # Verificar las dimensiones de la imagen cargada
     st.write(f"Dimensiones de la imagen: {image_np.shape}")
 
+    # Convertir la imagen a un tensor
     input_tensor = tf.convert_to_tensor(image_np, dtype=tf.uint8)
-    input_tensor = input_tensor[tf.newaxis, ...]
+    input_tensor = input_tensor[tf.newaxis, ...]  # Agregar una dimensión para el lote
 
+    # Cargar el modelo
+    try:
+        detect_fn = load_model()
+    except Exception as e:
+        st.error(f"Error al cargar el modelo: {e}")
+        st.write("Contenido del directorio actual:")
+        st.write(os.listdir(os.getcwd()))
+        st.write("Contenido del directorio modeloexportado:")
+        if os.path.exists("modeloexportado"):
+            st.write(os.listdir("modeloexportado"))
+        else:
+            st.error("El directorio modeloexportado no existe.")
+
+    # Realizar la detección
     st.write("Realizando detección...")
-    detections = model(input_tensor)
+    detections = detect_fn(input_tensor)
 
+    # Verificar si las detecciones están presentes antes de procesarlas
     if detections is not None and "num_detections" in detections:
+        # Procesar las detecciones
         num_detections = int(detections.pop("num_detections"))
-        detections = {key: value[0, :num_detections].numpy() for key, value in detections.items()}
+        detections = {key: value[0, :num_detections].numpy()
+                      for key, value in detections.items()}
         detections["num_detections"] = num_detections
 
+        # Filtrar resultados con alta confianza
         detection_classes = detections["detection_classes"].astype(np.int64)
         detection_boxes = detections["detection_boxes"]
         detection_scores = detections["detection_scores"]
 
+        # Dibujar las cajas en la imagen
         image_np_with_detections = image_np.copy()
 
+        # Iterar sobre las detecciones y dibujar las cajas con alta confianza
         for i in range(num_detections):
-            if detection_scores[i] > 0.5:
+            if detection_scores[i] > 0.5:  # Umbral de confianza
                 box = detection_boxes[i]
                 y_min, x_min, y_max, x_max = box
                 h, w, _ = image_np.shape
                 start_point = (int(x_min * w), int(y_min * h))
                 end_point = (int(x_max * w), int(y_max * h))
-                color_box = (255, 0, 0)
+
+                # Dibujar rectángulo rojo para fractura
+                color_box = (255, 0, 0)  # Rojo
                 thickness = 2
                 cv2.rectangle(image_np_with_detections, start_point, end_point, color_box, thickness)
 
+                # Añadir texto "Fractura"
                 text = "Fractura"
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 font_scale = 0.6
-                color_text = (255, 255, 255)
+                color_text = (255, 255, 255)  # Blanco
                 thickness_text = 2
                 text_size = cv2.getTextSize(text, font, font_scale, thickness_text)[0]
                 text_x = start_point[0]
                 text_y = start_point[1] - 10
                 background_start = (text_x, text_y - text_size[1] - 4)
                 background_end = (text_x + text_size[0] + 4, text_y + 4)
-                cv2.rectangle(image_np_with_detections, background_start, background_end, color_box, -1)
+                cv2.rectangle(image_np_with_detections, background_start, background_end, color_box, -1)  # Fondo rojo
                 cv2.putText(image_np_with_detections, text, (text_x, text_y), font, font_scale, color_text, thickness_text)
 
-        st.image(image_np_with_detections, caption="Detecciones", use_column_width=True)
+        # Mostrar la imagen con las detecciones
+        st.image(image_np_with_detections, caption="Detecciones", use_container_width=True)
     else:
         st.error("No se encontraron detecciones válidas.")
-
