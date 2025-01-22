@@ -49,6 +49,14 @@ Si bien el MVP se limita inicialmente a la detección, las futuras actualizacion
 * Facilitación del aprendizaje: Proporciona un entorno seguro para la práctica y la experimentación con imágenes médicas reales o simuladas.
 * Base para investigación y desarrollo: Posibilita la validación del modelo en entornos educativos, sentando las bases para su implementación clínica en el futuro.
 
+## Nuestro Rol
+<p>En Gendata nos dedicamos a diseñar soluciones innovadoras y eficientes, asegurando la máxima calidad en cada etapa del proyecto. Hacemos todo con el fin de proporcionar insights valiosos y facilitar la toma de decisiones informadas que conlleven una mejora significativa para nuestros clientes.</p>
+
+<p align = 'center'><img src="img/LogoGendata.jpeg" width=300 height=300> </p>
+
+<br />
+
+
 # La Importancia de la Inteligencia Artificial en el Ámbito Médico
 
 La Inteligencia Artificial está transformando la medicina al mejorar el diagnóstico, tratamiento y gestión de enfermedades. Algunos de sus principales beneficios son:
@@ -72,6 +80,26 @@ En ella puedes encontrar:
 * **Productos**: En esta sección encontrarás los productos que desarrollamos para este proyecto y la descripción de cada uno de ellos.
 * **Equipo**: En este apartado conocerás al increíble equipo que desarrolló este proyecto y su información de contacto.
 
+Utilice los siguientes enlaces para acceder al video del proyecto y la Aplicación
+
+<div style="display: flex; justify-content: start;">
+    <div style="margin: 5px; text-align: center;">
+        <a href="https://www.youtube.com/watch?v=XzLwn3GHHxg">
+            <img src="img\video_youtube.png" alt="Video" style="width: 35%;">
+        </a>
+        <div style="text-align: center;">
+          <p>Video</p>
+        </div>
+    </div>
+    <div style="margin: 5px; text-align: center;">
+        <a href="https://clasificacion-de-fracturas-oseas-a-partir-de-radiografias.streamlit.app/Modelo">
+            <img src="img\herramienta.png" alt="Herramienta (El modelo de IA)" style="width: 35%;">
+        </a>
+        <div style="text-align: center;">
+          <p>Aplicación</p>
+        </div>
+    </div>
+</div>
 
 # Conjunto de Datos
 Para este proyecto utilizamos como fuente de datos:
